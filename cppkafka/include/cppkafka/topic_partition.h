@@ -106,11 +106,6 @@ public:
      * Gets the offset
      */
     int64_t get_offset() const;
-    
-    /**
-     * @brief Sets the partition
-     */
-    void set_partition(int partition);
 
     /**
      * Sets the offset

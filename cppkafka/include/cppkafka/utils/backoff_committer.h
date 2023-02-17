@@ -101,17 +101,9 @@ public:
     void set_error_callback(ErrorCallback callback);
     
     /**
-     * \brief Commits the current partition assignment synchronously
-     *
-     * This will call Consumer::commit() until either the message is successfully
-     * committed or the error callback returns false (if any is set).
-     */
-    void commit();
-    
-    /**
      * \brief Commits the given message synchronously
      *
-     * This will call Consumer::commit(msg) until either the message is successfully
+     * This will call Consumer::commit until either the message is successfully
      * committed or the error callback returns false (if any is set).
      *
      * \param msg The message to be committed
@@ -121,7 +113,7 @@ public:
     /**
      * \brief Commits the offsets on the given topic/partitions synchronously
      *
-     * This will call Consumer::commit(topic_partitions) until either the offsets are successfully
+     * This will call Consumer::commit until either the offsets are successfully
      * committed or the error callback returns false (if any is set).
      *
      * \param topic_partitions The topic/partition list to be committed
@@ -135,30 +127,25 @@ public:
      */
     Consumer& get_consumer();
 private:
-    // If the ReturnType contains 'true', we abort committing. Otherwise we continue.
-    // The second member of the ReturnType contains the RdKafka error if any.
-    template <typename...Args>
-    bool do_commit(Args&&...args) {
+    // Return true to abort and false to continue committing
+    template <typename T>
+    bool do_commit(const T& object) {
         try {
-            consumer_.commit(std::forward<Args>(args)...);
-            // If the commit succeeds, we're done.
+            consumer_.commit(object);
+            // If the commit succeeds, we're done
             return true;
         }
         catch (const HandleException& ex) {
-            Error error = ex.get_error();
             // If there were actually no offsets to commit, return. Retrying won't solve
-            // anything here.
-            if (error == RD_KAFKA_RESP_ERR__NO_OFFSET) {
-                return true; //not considered an error.
+            // anything here
+            if (ex.get_error() == RD_KAFKA_RESP_ERR__NO_OFFSET) {
+                return true;
             }
             // If there's a callback and it returns false for this message, abort.
             // Otherwise keep committing.
             CallbackInvoker<ErrorCallback> callback("backoff committer", callback_, &consumer_);
-            if (callback && !callback(error)) {
-                throw ex; //abort
-            }
+            return callback && !callback(ex.get_error());
         }
-        return false; //continue
     }
 
     Consumer& consumer_;

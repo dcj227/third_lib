@@ -34,7 +34,6 @@
 #include <functional>
 #include <thread>
 #include "../consumer.h"
-#include "../exceptions.h"
 
 namespace cppkafka {
 
@@ -124,7 +123,7 @@ public:
             auto start = std::chrono::steady_clock::now();
             // If the callback returns true, we're done
             if (callback()) {
-                return; //success
+                return;
             }
             auto end = std::chrono::steady_clock::now();
             auto time_elapsed = end - start;
@@ -135,8 +134,6 @@ public:
             // Increase out backoff depending on the policy being used
             backoff = increase_backoff(backoff);
         }
-        // No more retries left or we have a terminal error.
-        throw ActionTerminatedException("Commit failed: no more retries.");
     }
 private:
     TimeUnit increase_backoff(TimeUnit backoff);

@@ -84,36 +84,6 @@ public:
      */
     Consumer& get_consumer() final;
     
-    /**
-     * \brief Creates partitions queues associated with the supplied partitions.
-     *
-     * This method contains a default implementation. It adds all the new queues belonging
-     * to the provided partition list and calls reset_state().
-     * To be used with static consumers.
-     *
-     * \param partitions Assigned topic partitions.
-     */
-    virtual void assign(TopicPartitionList& partitions);
-    
-    /**
-     * \brief Removes partitions queues associated with the supplied partitions.
-     *
-     * This method contains a default implementation. It removes all the queues
-     * belonging to the provided partition list and calls reset_state().
-     * To be used with static consumers.
-     *
-     * \param partitions Revoked topic partitions.
-     */
-    virtual void revoke(const TopicPartitionList& partitions);
-    
-    /**
-     * \brief Removes all partitions queues associated with the supplied partitions.
-     *
-     * This method contains a default implementation. It removes all the queues
-     * currently assigned and calls reset_state(). To be used with static consumers.
-     */
-    virtual void revoke();
-    
 protected:
     /**
      * \brief Get the queues from all assigned partitions
@@ -141,8 +111,8 @@ protected:
     /**
      * \brief Function to be called when a new partition assignment takes place
      *
-     * This method contains a default implementation. It calls assign()
-     * and invokes the user assignment callback.
+     * This method contains a default implementation. It adds all the new queues belonging
+     * to the provided partition list and calls reset_state().
      *
      * \param partitions Assigned topic partitions
      */
@@ -151,8 +121,8 @@ protected:
     /**
      * \brief Function to be called when an old partition assignment gets revoked
      *
-     * This method contains a default implementation. It calls revoke()
-     * and invokes the user revocation callback.
+     * This method contains a default implementation. It removes all the queues
+     * belonging to the provided partition list and calls reset_state().
      *
      * \param partitions Revoked topic partitions
      */

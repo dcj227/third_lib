@@ -29,6 +29,7 @@
 
 #include <vector>
 #include <memory>
+#include <boost/optional.hpp>
 #include <librdkafka/rdkafka.h>
 #include "event.h"
 #include "macros.h"

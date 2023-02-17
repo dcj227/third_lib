@@ -31,6 +31,7 @@
 #define CPPKAFKA_MESSAGE_TIMESTAMP_H
 
 #include <chrono>
+#include <boost/optional.hpp>
 #include <librdkafka/rdkafka.h>
 #include "macros.h"
 

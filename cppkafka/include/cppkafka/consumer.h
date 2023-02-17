@@ -102,7 +102,6 @@ public:
     using RevocationCallback = std::function<void(const TopicPartitionList&)>;
     using RebalanceErrorCallback = std::function<void(Error)>;
     using KafkaHandleBase::pause;
-    using KafkaHandleBase::resume;
 
     /**
      * \brief Creates an instance of a consumer.
@@ -281,20 +280,6 @@ public:
      * \return The topic partition list
      */
     TopicPartitionList get_offsets_committed(const TopicPartitionList& topic_partitions) const;
-    
-    /**
-     * \brief Gets the offsets committed for the given topic/partition list with a timeout
-     *
-     * This translates into a call to rd_kafka_committed
-     *
-     * \param topic_partitions The topic/partition list to be queried
-     *
-     * \param timeout The timeout for this operation. Supersedes the default consumer timeout.
-     *
-     * \return The topic partition list
-     */
-    TopicPartitionList get_offsets_committed(const TopicPartitionList& topic_partitions,
-                                             std::chrono::milliseconds timeout) const;
 
     /**
      * \brief Gets the offset positions for the given topic/partition list
@@ -306,38 +291,6 @@ public:
      * \return The topic partition list
      */
     TopicPartitionList get_offsets_position(const TopicPartitionList& topic_partitions) const;
-#if (RD_KAFKA_VERSION >= RD_KAFKA_STORE_OFFSETS_SUPPORT_VERSION)
-    /**
-     * \brief Stores the offsets on the currently assigned topic/partitions (legacy).
-     *
-     * This translates into a call to rd_kafka_offsets_store with the offsets prior to the current assignment positions.
-     * It is equivalent to calling rd_kafka_offsets_store(get_offsets_position(get_assignment())).
-     *
-     * \note When using this API it's recommended to set enable.auto.offset.store=false and enable.auto.commit=true.
-     */
-    void store_consumed_offsets() const;
-    
-    /**
-     * \brief Stores the offsets on the given topic/partitions (legacy).
-     *
-     * This translates into a call to rd_kafka_offsets_store.
-     *
-     * \param topic_partitions The topic/partition list to be stored.
-     *
-     * \note When using this API it's recommended to set enable.auto.offset.store=false and enable.auto.commit=true.
-     */
-    void store_offsets(const TopicPartitionList& topic_partitions) const;
-#endif
-    /**
-     * \brief Stores the offset for this message (legacy).
-     *
-     * This translates into a call to rd_kafka_offset_store.
-     *
-     * \param msg The message whose offset will be stored.
-     *
-     * \note When using this API it's recommended to set enable.auto.offset.store=false and enable.auto.commit=true.
-     */
-    void store_offset(const Message& msg) const;
 
     /**
      * \brief Gets the current topic subscription
